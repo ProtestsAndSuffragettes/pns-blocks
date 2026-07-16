@@ -3,14 +3,20 @@ import {
 	InnerBlocks,
 	useBlockProps,
 } from "@wordpress/block-editor";
-import { createBlock, registerBlockType } from "@wordpress/blocks";
+import {
+	createBlock,
+	getBlockType,
+	getBlockVariations,
+	registerBlockType,
+	registerBlockVariation,
+} from "@wordpress/blocks";
 import {
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon,
 	PanelBody,
 	SelectControl,
 } from "@wordpress/components";
-import { useDispatch, useSelect } from "@wordpress/data";
+import { subscribe, useDispatch, useSelect } from "@wordpress/data";
 import { createElement as el, Fragment } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 
@@ -40,23 +46,7 @@ const allowedLayoutVariants = layoutOptions.map(function (option) {
 	return option.value;
 });
 const defaultMediaType = "image";
-const mediaOptions = [
-	{
-		label: __("Image", "pns-blocks"),
-		value: "image",
-	},
-	{
-		label: __("Jetpack slideshow", "pns-blocks"),
-		value: "slideshow",
-	},
-	{
-		label: __("Video file", "pns-blocks"),
-		value: "video",
-	},
-];
-const allowedMediaTypes = mediaOptions.map(function (option) {
-	return option.value;
-});
+const allowedMediaTypes = ["image", "slideshow", "video"];
 const SPLIT_SECTION_ICON = el(
 	"svg",
 	{
@@ -254,6 +244,10 @@ function normaliseMediaType(mediaType) {
 	return allowedMediaTypes.includes(mediaType) ? mediaType : defaultMediaType;
 }
 
+function hasJetpackSlideshow() {
+	return Boolean(getBlockType("jetpack/slideshow"));
+}
+
 function getMediaColumn(block) {
 	const columns = block?.innerBlocks?.find(function (innerBlock) {
 		return innerBlock.name === "core/columns";
@@ -313,6 +307,11 @@ function getSplitSectionClassName(attributes) {
 
 function SplitSectionEdit(props) {
 	const attributes = props.attributes;
+	const hasJetpackSlideshowBlock = useSelect(function (select) {
+		return Boolean(
+			select("core/blocks").getBlockType("jetpack/slideshow"),
+		);
+	}, []);
 	const mediaColumn = useSelect(
 		function (select) {
 			return getMediaColumn(
@@ -331,6 +330,13 @@ function SplitSectionEdit(props) {
 	});
 	function changeMediaType(nextMediaType) {
 		const normalisedMediaType = normaliseMediaType(nextMediaType);
+
+		if (
+			normalisedMediaType === "slideshow" &&
+			!hasJetpackSlideshowBlock
+		) {
+			return;
+		}
 
 		props.setAttributes({
 			mediaType: normalisedMediaType,
@@ -368,7 +374,7 @@ function SplitSectionEdit(props) {
 						label: __("Media type", "pns-blocks"),
 						hideLabelFromVision: true,
 						help: __(
-							"Changing this replaces the current media only. Add the new image, slideshow, or video file afterward.",
+							"Changing this replaces the current media only. Add the new media file afterward.",
 							"pns-blocks",
 						),
 						value: mediaType,
@@ -385,11 +391,12 @@ function SplitSectionEdit(props) {
 						label: __("Video file", "pns-blocks"),
 						icon: SPLIT_VIDEO_ICON,
 					}),
-					el(ToggleGroupControlOptionIcon, {
-						value: "slideshow",
-						label: __("Jetpack slideshow", "pns-blocks"),
-						icon: SPLIT_SLIDESHOW_ICON,
-					}),
+					hasJetpackSlideshowBlock &&
+						el(ToggleGroupControlOptionIcon, {
+							value: "slideshow",
+							label: __("Jetpack slideshow", "pns-blocks"),
+							icon: SPLIT_SLIDESHOW_ICON,
+						}),
 				),
 				el(SelectControl, {
 					label: __("Layout", "pns-blocks"),
@@ -413,6 +420,43 @@ function SplitSectionEdit(props) {
 			}),
 		),
 	);
+}
+
+const slideshowVariation = {
+	name: "slideshow",
+	title: __("PNS - Split Section Slideshow", "pns-blocks"),
+	icon: SPLIT_SLIDESHOW_ICON,
+	description: __(
+		"Two-column section with editable copy and a framed Jetpack slideshow.",
+		"pns-blocks",
+	),
+	attributes: {
+		align: "full",
+		backgroundColor: "white",
+		layoutVariant: "media-right",
+		mediaType: "slideshow",
+	},
+	innerBlocks: slideshowTemplate,
+	isActive: ["mediaType"],
+	scope: ["block", "inserter"],
+};
+
+function registerSlideshowVariationWhenAvailable() {
+	if (!hasJetpackSlideshow()) {
+		return false;
+	}
+
+	const hasSlideshowVariation = getBlockVariations(
+		"pns/split-section",
+	).some(function (variation) {
+		return variation.name === slideshowVariation.name;
+	});
+
+	if (!hasSlideshowVariation) {
+		registerBlockVariation("pns/split-section", slideshowVariation);
+	}
+
+	return true;
 }
 
 registerBlockType("pns/split-section", {
@@ -459,23 +503,13 @@ registerBlockType("pns/split-section", {
 			isActive: ["mediaType"],
 			scope: ["block", "inserter"],
 		},
-		{
-			name: "slideshow",
-			title: __("PNS - Split Section Slideshow", "pns-blocks"),
-			icon: SPLIT_SLIDESHOW_ICON,
-			description: __(
-				"Two-column section with editable copy and a framed Jetpack slideshow.",
-				"pns-blocks",
-			),
-			attributes: {
-				align: "full",
-				backgroundColor: "white",
-				layoutVariant: "media-right",
-				mediaType: "slideshow",
-			},
-			innerBlocks: slideshowTemplate,
-			isActive: ["mediaType"],
-			scope: ["block", "inserter"],
-		},
 	],
 });
+
+if (!registerSlideshowVariationWhenAvailable()) {
+	const unsubscribe = subscribe(function () {
+		if (registerSlideshowVariationWhenAvailable()) {
+			unsubscribe();
+		}
+	});
+}

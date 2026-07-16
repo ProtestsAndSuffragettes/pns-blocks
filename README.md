@@ -87,6 +87,14 @@ installs.
 - New families should be added only when a block has a different product domain,
   dependency profile, or release cadence from the existing families.
 
+## Optional integrations
+
+PNS Blocks does not require Jetpack. When Jetpack's `jetpack/slideshow` block
+is registered in the editor, Split Section exposes its Jetpack slideshow media
+control and slideshow variation. Without that block, editors can still create
+image and video Split Sections; existing saved slideshow content is left
+unchanged.
+
 ## Guardrails
 
 - Do not edit third-party plugins to add PNS behavior.
