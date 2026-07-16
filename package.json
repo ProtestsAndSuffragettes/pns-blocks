@@ -14,11 +14,10 @@
 	"homepage": "https://protestsandsuffragettes.com/",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/bnjmnrsh/pns.git",
-		"directory": "app/public/wp-content/plugins/pns-blocks"
+		"url": "https://github.com/ProtestsAndSuffragettes/pns-blocks.git"
 	},
 	"bugs": {
-		"url": "https://github.com/bnjmnrsh/pns/issues"
+		"url": "https://github.com/ProtestsAndSuffragettes/pns-blocks/issues"
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^30.25.0"
