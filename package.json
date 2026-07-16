@@ -1,0 +1,39 @@
+{
+	"name": "pns-blocks",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Project-owned portable WordPress blocks for Protests and Suffragettes.",
+	"author": "Protests and Suffragettes",
+	"license": "GPL-2.0-or-later",
+	"keywords": [
+		"wordpress",
+		"blocks",
+		"gutenberg",
+		"protests-and-suffragettes"
+	],
+	"homepage": "https://protestsandsuffragettes.com/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/bnjmnrsh/pns.git",
+		"directory": "app/public/wp-content/plugins/pns-blocks"
+	},
+	"bugs": {
+		"url": "https://github.com/bnjmnrsh/pns/issues"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^30.25.0"
+	},
+	"scripts": {
+		"start": "wp-scripts start --source-path=blocks --output-path=build/blocks",
+		"build": "wp-scripts build --source-path=blocks --output-path=build/blocks",
+		"format": "wp-scripts format && prettier --write \"**/*.{css,md}\"",
+		"format:check": "wp-scripts lint-js && prettier --check \"**/*.{css,md}\"",
+		"lint:js": "wp-scripts lint-js",
+		"lint:css": "wp-scripts lint-style",
+		"lint:pkg-json": "wp-scripts lint-pkg-json",
+		"test:featured-post-assets": "wp eval-file scripts/verify-featured-post-asset-contract.php",
+		"test:post-metadata": "wp eval-file scripts/verify-post-metadata-block.php",
+		"check": "wp-scripts lint-pkg-json && wp-scripts lint-js && wp-scripts lint-style && prettier --check \"**/*.{css,md}\" && wp-scripts build --source-path=blocks --output-path=build/blocks"
+	},
+	"packageManager": "pnpm@11.5.2"
+}

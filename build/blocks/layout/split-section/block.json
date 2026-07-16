@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "pns/split-section",
+  "title": "PNS - Split Section",
+  "category": "design",
+  "description": "Two-column PNS section with editable copy, media, and scoped layout controls.",
+  "textdomain": "pns-blocks",
+  "attributes": {
+    "layoutVariant": {
+      "type": "string",
+      "default": "media-right"
+    },
+    "mediaType": {
+      "type": "string"
+    },
+    "align": {
+      "type": "string",
+      "default": "full"
+    }
+  },
+  "supports": {
+    "align": [
+      "full"
+    ],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": true,
+      "gradients": false,
+      "link": false
+    },
+    "customClassName": false,
+    "html": false,
+    "spacing": {
+      "margin": false,
+      "padding": false,
+      "blockGap": false
+    }
+  },
+  "example": {
+    "attributes": {
+      "layoutVariant": "media-right",
+      "align": "full",
+      "backgroundColor": "white"
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}

@@ -1,0 +1,83 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pns/featured-post",
+	"title": "PNS Featured Post",
+	"category": "widgets",
+	"description": "Render the lead featured post section for archive templates.",
+	"textdomain": "pns-blocks",
+	"attributes": {
+		"postType": {
+			"type": "string",
+			"default": "post"
+		},
+		"heading": {
+			"type": "string",
+			"default": "Featured News:"
+		},
+		"moreText": {
+			"type": "string",
+			"default": "Read latest news"
+		},
+		"order": {
+			"type": "string",
+			"default": "desc"
+		},
+		"orderBy": {
+			"type": "string",
+			"default": "date"
+		},
+		"offset": {
+			"type": "number",
+			"default": 0
+		},
+		"layoutVariant": {
+			"type": "string",
+			"default": "edge-media-left"
+		},
+		"taxonomies": {
+			"type": "array",
+			"default": []
+		},
+		"align": {
+			"type": "string",
+			"default": "full"
+		}
+	},
+	"supports": {
+		"inserter": false,
+		"align": ["full"],
+		"anchor": true,
+		"color": {
+			"background": true,
+			"text": true,
+			"gradients": false,
+			"link": false
+		},
+		"customClassName": false,
+		"html": false,
+		"spacing": {
+			"margin": false,
+			"padding": false,
+			"blockGap": false
+		}
+	},
+	"example": {
+		"attributes": {
+			"postType": "post",
+			"heading": "Featured News:",
+			"moreText": "Read latest news",
+			"order": "desc",
+			"orderBy": "date",
+			"offset": 0,
+			"layoutVariant": "edge-media-left",
+			"align": "full",
+			"backgroundColor": "neutral-0",
+			"textColor": "neutral-800"
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "pns-split-section-editor-style",
+	"style": "pns-split-section-style",
+	"render": "file:./render.php"
+}
