@@ -5,6 +5,7 @@ import {
 } from "@wordpress/block-editor";
 import {
 	createBlock,
+	createBlocksFromInnerBlocksTemplate,
 	getBlockType,
 	getBlockVariations,
 	registerBlockType,
@@ -24,6 +25,13 @@ import "./editor.css";
 import "./style.css";
 
 const defaultLayoutVariant = "media-right";
+const textTextMediaType = "text";
+const legacyTextTextLayoutVariants = [
+	"text-text",
+	"text-text-reversed",
+	"text-text-constrained",
+	"text-text-constrained-reversed",
+];
 const layoutOptions = [
 	{
 		label: __("Media left", "pns-blocks"),
@@ -46,7 +54,7 @@ const allowedLayoutVariants = layoutOptions.map(function (option) {
 	return option.value;
 });
 const defaultMediaType = "image";
-const allowedMediaTypes = ["image", "slideshow", "video"];
+const allowedMediaTypes = ["image", "slideshow", "text", "video"];
 const SPLIT_SECTION_ICON = el(
 	"svg",
 	{
@@ -234,10 +242,101 @@ const slideshowTemplate = splitSectionTemplate(
 	),
 );
 
+function textColumnTemplate(backgroundColor, heading, body, columnRole) {
+	return [
+		"core/column",
+		{
+			backgroundColor,
+			className:
+				"pns-split-section__" +
+				columnRole +
+				"-column pns-split-section__text-column",
+			textColor: "neutral-0",
+		},
+		[
+			[
+				"core/group",
+				{
+					className: "pns-split-section__copy",
+				},
+				[
+					["core/heading", { content: heading }],
+					[
+						"core/paragraph",
+						{
+							content: body,
+							fontSize: "text-lead",
+						},
+					],
+					[
+						"core/paragraph",
+						{
+							content: __(
+								"Add supporting copy, links, or buttons for this panel.",
+								"pns-blocks",
+							),
+						},
+					],
+				],
+			],
+		],
+	];
+}
+
+const firstTextPanelTemplate = textColumnTemplate(
+	"brand-purple",
+	__("First Panel", "pns-blocks"),
+	__(
+		"Use this panel for the first part of your paired message.",
+		"pns-blocks",
+	),
+	"copy",
+);
+const secondTextPanelTemplate = textColumnTemplate(
+	"heritage-green",
+	__("Second Panel", "pns-blocks"),
+	__(
+		"Use this panel for the second part of your paired message.",
+		"pns-blocks",
+	),
+	"copy",
+);
+const textTextTemplate = [
+	[
+		"core/columns",
+		{
+			align: "full",
+			className: "pns-split-section__columns",
+		},
+		[firstTextPanelTemplate, secondTextPanelTemplate],
+	],
+];
+
 function normaliseLayoutVariant(layoutVariant) {
 	return allowedLayoutVariants.includes(layoutVariant)
 		? layoutVariant
 		: defaultLayoutVariant;
+}
+
+function isTextTextLayout(attributes) {
+	return (
+		attributes.mediaType === textTextMediaType ||
+		legacyTextTextLayoutVariants.includes(attributes.layoutVariant)
+	);
+}
+
+function normaliseTextTextLayoutVariant(layoutVariant) {
+	const legacyLayoutMap = {
+		"text-text": "edge-media-right",
+		"text-text-reversed": "edge-media-left",
+		"text-text-constrained": "media-right",
+		"text-text-constrained-reversed": "media-left",
+	};
+
+	return (
+		legacyLayoutMap[layoutVariant] ||
+		normaliseLayoutVariant(layoutVariant || "edge-media-right")
+	);
 }
 
 function normaliseMediaType(mediaType) {
@@ -253,15 +352,22 @@ function getMediaColumn(block) {
 		return innerBlock.name === "core/columns";
 	});
 
-	return columns?.innerBlocks?.find(function (innerBlock) {
-		return innerBlock.attributes?.className?.includes(
-			"pns-split-section__media-column",
-		);
-	});
+	return (
+		columns?.innerBlocks?.find(function (innerBlock) {
+			return innerBlock.attributes?.className?.includes(
+				"pns-split-section__media-column",
+			);
+		}) || columns?.innerBlocks?.[1]
+	);
 }
 
 function getMediaTypeFromColumn(mediaColumn) {
 	const mediaBlockName = mediaColumn?.innerBlocks?.[0]?.name;
+	const columnClassName = mediaColumn?.attributes?.className || "";
+
+	if (columnClassName.includes("pns-split-section__text-column")) {
+		return textTextMediaType;
+	}
 
 	if (mediaBlockName === "jetpack/slideshow") {
 		return "slideshow";
@@ -293,8 +399,15 @@ function createMediaBlock(mediaType) {
 	return createBlock(blockName);
 }
 
+function createSecondTextPanelBlocks() {
+	return createBlocksFromInnerBlocksTemplate(secondTextPanelTemplate[2]);
+}
+
 function getSplitSectionClassName(attributes) {
-	const layoutVariant = normaliseLayoutVariant(attributes.layoutVariant);
+	const isTextText = isTextTextLayout(attributes);
+	const layoutVariant = isTextText
+		? normaliseTextTextLayoutVariant(attributes.layoutVariant)
+		: normaliseLayoutVariant(attributes.layoutVariant);
 
 	return [
 		"pns-section",
@@ -302,11 +415,15 @@ function getSplitSectionClassName(attributes) {
 		"pns-split-section",
 		"pns-site-frame-panel",
 		"is-style-pns-" + layoutVariant,
-	].join(" ");
+		isTextText ? "is-pns-text-text" : "",
+	]
+		.filter(Boolean)
+		.join(" ");
 }
 
 function SplitSectionEdit(props) {
 	const attributes = props.attributes;
+	const isTextText = isTextTextLayout(attributes);
 	const hasJetpackSlideshowBlock = useSelect(function (select) {
 		return Boolean(
 			select("core/blocks").getBlockType("jetpack/slideshow"),
@@ -340,18 +457,38 @@ function SplitSectionEdit(props) {
 
 		props.setAttributes({
 			mediaType: normalisedMediaType,
+			layoutVariant: isTextText
+				? normaliseTextTextLayoutVariant(attributes.layoutVariant)
+				: normaliseLayoutVariant(attributes.layoutVariant),
 		});
 
 		if (!mediaColumn || normalisedMediaType === mediaType) {
 			return;
 		}
 
-		updateBlockAttributes(mediaColumn.clientId, {
-			className: getMediaColumnClassName(normalisedMediaType),
-		});
+		const isTextPanel = normalisedMediaType === textTextMediaType;
+
+		updateBlockAttributes(
+			mediaColumn.clientId,
+			isTextPanel
+				? {
+						backgroundColor: "heritage-green",
+						className:
+							"pns-split-section__copy-column pns-split-section__text-column",
+						textColor: "neutral-0",
+					}
+				: {
+						backgroundColor: undefined,
+						className:
+							getMediaColumnClassName(normalisedMediaType),
+						textColor: undefined,
+					},
+		);
 		replaceInnerBlocks(
 			mediaColumn.clientId,
-			[createMediaBlock(normalisedMediaType)],
+			isTextPanel
+				? createSecondTextPanelBlocks()
+				: [createMediaBlock(normalisedMediaType)],
 			true,
 		);
 	}
@@ -360,62 +497,73 @@ function SplitSectionEdit(props) {
 		Fragment,
 		null,
 		el(
-			InspectorControls,
-			null,
-			el(
-				PanelBody,
-				{
-					title: __("Split section", "pns-blocks"),
-					initialOpen: true,
-				},
+				InspectorControls,
+				null,
 				el(
-					ToggleGroupControl,
+					PanelBody,
 					{
-						label: __("Media type", "pns-blocks"),
-						hideLabelFromVision: true,
-						help: __(
-							"Changing this replaces the current media only. Add the new media file afterward.",
-							"pns-blocks",
-						),
-						value: mediaType,
-						onChange: changeMediaType,
-						__next40pxDefaultSize: true,
+						title: __("Split section", "pns-blocks"),
+						initialOpen: true,
 					},
-					el(ToggleGroupControlOptionIcon, {
-						value: "image",
-						label: __("Image", "pns-blocks"),
-						icon: SPLIT_IMAGE_ICON,
-					}),
-					el(ToggleGroupControlOptionIcon, {
-						value: "video",
-						label: __("Video file", "pns-blocks"),
-						icon: SPLIT_VIDEO_ICON,
-					}),
-					hasJetpackSlideshowBlock &&
+					el(
+						ToggleGroupControl,
+						{
+							label: __("Media type", "pns-blocks"),
+							hideLabelFromVision: true,
+							help: __(
+								"Changing this replaces the second panel only. Add or edit its content afterward.",
+								"pns-blocks",
+							),
+							value: mediaType,
+							onChange: changeMediaType,
+							__next40pxDefaultSize: true,
+						},
 						el(ToggleGroupControlOptionIcon, {
-							value: "slideshow",
-							label: __("Jetpack slideshow", "pns-blocks"),
-							icon: SPLIT_SLIDESHOW_ICON,
+							value: textTextMediaType,
+							label: __("Text", "pns-blocks"),
+							icon: SPLIT_SECTION_ICON,
 						}),
+						el(ToggleGroupControlOptionIcon, {
+							value: "image",
+							label: __("Image", "pns-blocks"),
+							icon: SPLIT_IMAGE_ICON,
+						}),
+						el(ToggleGroupControlOptionIcon, {
+							value: "video",
+							label: __("Video file", "pns-blocks"),
+							icon: SPLIT_VIDEO_ICON,
+						}),
+						hasJetpackSlideshowBlock &&
+							el(ToggleGroupControlOptionIcon, {
+								value: "slideshow",
+								label: __("Jetpack slideshow", "pns-blocks"),
+								icon: SPLIT_SLIDESHOW_ICON,
+							}),
+					),
+					el(SelectControl, {
+						label: __("Layout", "pns-blocks"),
+						value: normaliseLayoutVariant(
+							isTextText
+								? normaliseTextTextLayoutVariant(
+										attributes.layoutVariant,
+									)
+								: attributes.layoutVariant,
+						),
+						options: layoutOptions,
+						onChange(layoutVariant) {
+							props.setAttributes({
+								layoutVariant:
+									normaliseLayoutVariant(layoutVariant),
+							});
+						},
+					}),
 				),
-				el(SelectControl, {
-					label: __("Layout", "pns-blocks"),
-					value: normaliseLayoutVariant(attributes.layoutVariant),
-					options: layoutOptions,
-					onChange(layoutVariant) {
-						props.setAttributes({
-							layoutVariant:
-								normaliseLayoutVariant(layoutVariant),
-						});
-					},
-				}),
 			),
-		),
 		el(
 			"div",
 			blockProps,
 			el(InnerBlocks, {
-				template: imageTemplate,
+				template: isTextText ? textTextTemplate : imageTemplate,
 				templateLock: false,
 			}),
 		),
@@ -466,6 +614,25 @@ registerBlockType("pns/split-section", {
 		return el(InnerBlocks.Content);
 	},
 	variations: [
+		{
+			name: "text-text",
+			title: __("PNS - Split Section Text | Text", "pns-blocks"),
+			icon: SPLIT_SECTION_ICON,
+			description: __(
+				"Two editable text panels using the shared Split Section frame and content rails.",
+				"pns-blocks",
+			),
+			attributes: {
+				align: "full",
+				layoutVariant: "edge-media-right",
+				mediaType: textTextMediaType,
+			},
+			innerBlocks: textTextTemplate,
+			isActive(blockAttributes) {
+				return isTextTextLayout(blockAttributes);
+			},
+			scope: ["block", "inserter"],
+		},
 		{
 			name: "image",
 			title: __("PNS - Split Section Image", "pns-blocks"),
