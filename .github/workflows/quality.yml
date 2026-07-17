@@ -27,6 +27,9 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
+            - name: Check PHP syntax
+              run: find . -path './node_modules' -prune -o -path './vendor' -prune -o -type f -name '*.php' -exec php -l {} \;
+
             - name: Check source and rebuild assets
               run: pnpm check
 
