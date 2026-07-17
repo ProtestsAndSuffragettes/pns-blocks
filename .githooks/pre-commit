@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+set -eu
+
+if ! git diff --cached --name-only --diff-filter=ACMRD | grep -Eq '^(blocks/|package\.json$|pnpm-lock\.yaml$|webpack\.config\.|babel\.config\.|postcss\.config\.|\.browserslistrc$)'; then
+	exit 0
+fi
+
+pnpm build
+
+unstaged_assets="$(git diff --name-only -- build/blocks)"
+untracked_assets="$(git ls-files --others --exclude-standard -- build/blocks)"
+
+if [ -z "$unstaged_assets" ] && [ -z "$untracked_assets" ]; then
+	exit 0
+fi
+
+printf '%s\n' 'The staged source changes require updated build/blocks assets.' >&2
+printf '%s\n' 'Review and stage the generated files, then commit again:' >&2
+printf '%s\n%s\n' "$unstaged_assets" "$untracked_assets" | sed '/^$/d' >&2
+printf '%s\n' '  git add build/blocks' >&2
+exit 1
