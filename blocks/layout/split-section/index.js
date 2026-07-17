@@ -14,6 +14,7 @@ import {
 import {
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 	PanelBody,
 	SelectControl,
 } from "@wordpress/components";
@@ -55,6 +56,24 @@ const allowedLayoutVariants = layoutOptions.map(function (option) {
 });
 const defaultMediaType = "image";
 const allowedMediaTypes = ["image", "slideshow", "text", "video"];
+const defaultTextVerticalAlignment = "center";
+const textVerticalAlignmentOptions = [
+	{
+		label: __("Top", "pns-blocks"),
+		value: "top",
+	},
+	{
+		label: __("Centre", "pns-blocks"),
+		value: defaultTextVerticalAlignment,
+	},
+	{
+		label: __("Bottom", "pns-blocks"),
+		value: "bottom",
+	},
+];
+const copyGroupAttributes = {
+	className: "pns-split-section__copy",
+};
 const SPLIT_SECTION_ICON = el(
 	"svg",
 	{
@@ -182,9 +201,7 @@ function splitSectionTemplate(mediaTemplate, copyText, mediaColumnClassName) {
 					[
 						[
 							"core/group",
-							{
-								className: "pns-split-section__copy",
-							},
+							copyGroupAttributes,
 							copyTemplate.map(function (block) {
 								if (
 									block[0] !== "core/paragraph" ||
@@ -256,9 +273,7 @@ function textColumnTemplate(backgroundColor, heading, body, columnRole) {
 		[
 			[
 				"core/group",
-				{
-					className: "pns-split-section__copy",
-				},
+				copyGroupAttributes,
 				[
 					["core/heading", { content: heading }],
 					[
@@ -343,6 +358,22 @@ function normaliseMediaType(mediaType) {
 	return allowedMediaTypes.includes(mediaType) ? mediaType : defaultMediaType;
 }
 
+function normaliseTextVerticalAlignment(alignment) {
+	return textVerticalAlignmentOptions.some(function (option) {
+		return option.value === alignment;
+	})
+		? alignment
+		: defaultTextVerticalAlignment;
+}
+
+function getTextVerticalAlignmentClassName(panel, alignment) {
+	const normalisedAlignment = normaliseTextVerticalAlignment(alignment);
+
+	return normalisedAlignment === defaultTextVerticalAlignment
+		? ""
+		: "is-pns-" + panel + "-text-align-" + normalisedAlignment;
+}
+
 function hasJetpackSlideshow() {
 	return Boolean(getBlockType("jetpack/slideshow"));
 }
@@ -416,6 +447,16 @@ function getSplitSectionClassName(attributes) {
 		"pns-site-frame-panel",
 		"is-style-pns-" + layoutVariant,
 		isTextText ? "is-pns-text-text" : "",
+		getTextVerticalAlignmentClassName(
+			"primary",
+			attributes.textVerticalAlignment,
+		),
+		isTextText
+			? getTextVerticalAlignmentClassName(
+					"secondary",
+					attributes.secondaryTextVerticalAlignment,
+				)
+			: "",
 	]
 		.filter(Boolean)
 		.join(" ");
@@ -447,6 +488,7 @@ function SplitSectionEdit(props) {
 	});
 	function changeMediaType(nextMediaType) {
 		const normalisedMediaType = normaliseMediaType(nextMediaType);
+		const isTextPanel = normalisedMediaType === textTextMediaType;
 
 		if (
 			normalisedMediaType === "slideshow" &&
@@ -460,13 +502,14 @@ function SplitSectionEdit(props) {
 			layoutVariant: isTextText
 				? normaliseTextTextLayoutVariant(attributes.layoutVariant)
 				: normaliseLayoutVariant(attributes.layoutVariant),
+			secondaryTextVerticalAlignment: isTextPanel
+				? attributes.secondaryTextVerticalAlignment
+				: undefined,
 		});
 
 		if (!mediaColumn || normalisedMediaType === mediaType) {
 			return;
 		}
-
-		const isTextPanel = normalisedMediaType === textTextMediaType;
 
 		updateBlockAttributes(
 			mediaColumn.clientId,
@@ -559,6 +602,87 @@ function SplitSectionEdit(props) {
 					}),
 				),
 			),
+		el(
+			InspectorControls,
+			{ group: "dimensions" },
+			el(
+				ToolsPanelItem,
+				{
+					label: isTextText
+						? __("First text panel vertical alignment", "pns-blocks")
+						: __("Text vertical alignment", "pns-blocks"),
+					hasValue() {
+						return (
+							normaliseTextVerticalAlignment(
+								attributes.textVerticalAlignment,
+							) !== defaultTextVerticalAlignment
+						);
+					},
+					onDeselect() {
+						props.setAttributes({
+							textVerticalAlignment:
+								defaultTextVerticalAlignment,
+						});
+					},
+					isShownByDefault: true,
+					panelId: props.clientId,
+				},
+				el(SelectControl, {
+					label: isTextText
+						? __("First text panel vertical alignment", "pns-blocks")
+						: __("Text vertical alignment", "pns-blocks"),
+					value: normaliseTextVerticalAlignment(
+						attributes.textVerticalAlignment,
+					),
+					options: textVerticalAlignmentOptions,
+					onChange(textVerticalAlignment) {
+						props.setAttributes({ textVerticalAlignment });
+					},
+					__next40pxDefaultSize: true,
+				}),
+			),
+			isTextText &&
+				el(
+					ToolsPanelItem,
+					{
+						label: __(
+							"Second text panel vertical alignment",
+							"pns-blocks",
+						),
+						hasValue() {
+							return (
+								normaliseTextVerticalAlignment(
+									attributes.secondaryTextVerticalAlignment,
+								) !== defaultTextVerticalAlignment
+							);
+						},
+						onDeselect() {
+							props.setAttributes({
+								secondaryTextVerticalAlignment:
+									defaultTextVerticalAlignment,
+							});
+						},
+						isShownByDefault: true,
+						panelId: props.clientId,
+					},
+					el(SelectControl, {
+						label: __(
+							"Second text panel vertical alignment",
+							"pns-blocks",
+						),
+						value: normaliseTextVerticalAlignment(
+							attributes.secondaryTextVerticalAlignment,
+						),
+						options: textVerticalAlignmentOptions,
+						onChange(secondaryTextVerticalAlignment) {
+							props.setAttributes({
+								secondaryTextVerticalAlignment,
+							});
+						},
+						__next40pxDefaultSize: true,
+					}),
+				),
+		),
 		el(
 			"div",
 			blockProps,

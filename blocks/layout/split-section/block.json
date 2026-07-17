@@ -14,6 +14,14 @@
 		"mediaType": {
 			"type": "string"
 		},
+		"textVerticalAlignment": {
+			"type": "string",
+			"default": "center"
+		},
+		"secondaryTextVerticalAlignment": {
+			"type": "string",
+			"default": "center"
+		},
 		"align": {
 			"type": "string",
 			"default": "full"

@@ -27,6 +27,10 @@
 	--pns-split-section--copy-padding: var(
 		--pns-split-section--content-rail
 	);
+	--pns-split-section--primary-copy-align: center;
+	--pns-split-section--primary-copy-margin-block: auto;
+	--pns-split-section--secondary-copy-align: center;
+	--pns-split-section--secondary-copy-margin-block: auto;
 
 	box-sizing: border-box;
 	margin-block: 0;
@@ -84,14 +88,15 @@
 }
 
 .pns-split-section__copy {
-	align-self: center;
+	align-self: var(--pns-split-section--primary-copy-align);
 	box-sizing: border-box;
 	color: var(
 		--pns-section-text,
 		var(--wp--custom--color--text--default, currentcolor)
 	);
 	inline-size: 100%;
-	margin: auto;
+	margin-block: var(--pns-split-section--primary-copy-margin-block);
+	margin-inline: auto;
 	max-inline-size: var(--pns-split-section--content-size);
 	min-inline-size: 0;
 	/*
@@ -100,6 +105,31 @@
 	 * value until content is resaved without the obsolete support setting.
 	 */
 	padding: var(--pns-split-section--copy-padding) !important;
+}
+
+/*
+ * Vertical alignment belongs only to copy Groups. Wrapper classes change
+ * copy-only variables; media columns never consume them. Every nested Split
+ * Section resets the variables above, preventing inherited alignment state.
+ */
+.pns-split-section.is-pns-primary-text-align-top {
+	--pns-split-section--primary-copy-align: start;
+	--pns-split-section--primary-copy-margin-block: 0 auto;
+}
+
+.pns-split-section.is-pns-primary-text-align-bottom {
+	--pns-split-section--primary-copy-align: end;
+	--pns-split-section--primary-copy-margin-block: auto 0;
+}
+
+.pns-split-section.is-pns-text-text.is-pns-secondary-text-align-top {
+	--pns-split-section--secondary-copy-align: start;
+	--pns-split-section--secondary-copy-margin-block: 0 auto;
+}
+
+.pns-split-section.is-pns-text-text.is-pns-secondary-text-align-bottom {
+	--pns-split-section--secondary-copy-align: end;
+	--pns-split-section--secondary-copy-margin-block: auto 0;
 }
 
 .pns-split-section__copy .wp-block-heading {
@@ -359,6 +389,13 @@
 	a:not(.wp-block-button__link, .has-text-color) {
 	/* Beat host-theme link defaults while preserving the editor-selected Column text colour. */
 	color: inherit !important;
+}
+
+.pns-split-section.is-pns-text-text
+	.pns-split-section__text-column:nth-child(2)
+	.pns-split-section__copy {
+	align-self: var(--pns-split-section--secondary-copy-align);
+	margin-block: var(--pns-split-section--secondary-copy-margin-block);
 }
 
 /* stylelint-disable-next-line no-descending-specificity -- Text panel colour controls specialize the shared left/right layout selectors above. */
