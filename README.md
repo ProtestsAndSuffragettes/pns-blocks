@@ -72,6 +72,12 @@ the WordPress CSS standards with the project-owned `.pns-*` selector convention.
 `pnpm-workspace.yaml` records the dependency build scripts approved for pnpm 11
 installs.
 
+## Agent workflow
+
+See [`AGENTS.md`](AGENTS.md) for the repository workflow, local Dex planning
+state, generated-asset contract, and Release Please conventions. The
+project-scoped WordPress skills are available under `.codex/skills/`.
+
 ## Block Families
 
 - `blocks/layout/` owns portable structural layout blocks such as split
