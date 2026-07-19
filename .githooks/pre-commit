@@ -6,7 +6,7 @@ if ! git diff --cached --name-only --diff-filter=ACMRD | grep -Eq '^(blocks/|pac
 	exit 0
 fi
 
-pnpm build
+./node_modules/.bin/wp-scripts build --source-path=blocks --output-path=build/blocks
 
 unstaged_assets="$(git diff --name-only -- build/blocks)"
 untracked_assets="$(git ls-files --others --exclude-standard -- build/blocks)"
