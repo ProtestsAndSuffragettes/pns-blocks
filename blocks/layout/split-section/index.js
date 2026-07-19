@@ -14,7 +14,6 @@ import {
 import {
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 	PanelBody,
 	SelectControl,
 } from "@wordpress/components";
@@ -55,7 +54,13 @@ const allowedLayoutVariants = layoutOptions.map(function (option) {
 	return option.value;
 });
 const defaultMediaType = "image";
-const allowedMediaTypes = ["image", "slideshow", "text", "video"];
+const allowedMediaTypes = [
+	"image",
+	"slideshow",
+	"text",
+	"video",
+	"youtube",
+];
 const defaultTextVerticalAlignment = "center";
 const textVerticalAlignmentOptions = [
 	{
@@ -174,6 +179,18 @@ const imageMediaTemplate = [
 
 const videoMediaTemplate = [["core/video", {}]];
 
+const youTubeMediaTemplate = [
+	[
+		"core/embed",
+		{
+			className: "wp-embed-aspect-16-9 wp-has-aspect-ratio",
+			providerNameSlug: "youtube",
+			responsive: true,
+			type: "video",
+		},
+	],
+];
+
 const slideshowMediaTemplate = [
 	[
 		"jetpack/slideshow",
@@ -247,6 +264,14 @@ const videoTemplate = splitSectionTemplate(
 	videoMediaTemplate,
 	__(
 		"Use this split section for focused copy with a related video. Replace this starter text before publishing.",
+		"pns-blocks",
+	),
+	"pns-split-section__media-column pns-split-section__media-column--video",
+);
+const youTubeTemplate = splitSectionTemplate(
+	youTubeMediaTemplate,
+	__(
+		"Use this split section for focused copy with a related YouTube video. Paste the YouTube URL into the embed panel before publishing.",
 		"pns-blocks",
 	),
 	"pns-split-section__media-column pns-split-section__media-column--video",
@@ -392,8 +417,19 @@ function getMediaColumn(block) {
 	);
 }
 
-function getMediaTypeFromColumn(mediaColumn) {
-	const mediaBlockName = mediaColumn?.innerBlocks?.[0]?.name;
+function isYouTubeEmbed(mediaBlock) {
+	const providerNameSlug = mediaBlock?.attributes?.providerNameSlug;
+	const url = mediaBlock?.attributes?.url || "";
+
+	return (
+		providerNameSlug === "youtube" ||
+		/^https?:\/\/(?:www\.)?(?:youtube\.com|youtu\.be)\//i.test(url)
+	);
+}
+
+function getMediaTypeFromColumn(mediaColumn, savedMediaType) {
+	const mediaBlock = mediaColumn?.innerBlocks?.[0];
+	const mediaBlockName = mediaBlock?.name;
 	const columnClassName = mediaColumn?.attributes?.className || "";
 
 	if (columnClassName.includes("pns-split-section__text-column")) {
@@ -404,30 +440,39 @@ function getMediaTypeFromColumn(mediaColumn) {
 		return "slideshow";
 	}
 
-	if (mediaBlockName === "core/video" || mediaBlockName === "core/embed") {
+	if (mediaBlockName === "core/embed") {
+		return isYouTubeEmbed(mediaBlock) ? "youtube" : "video";
+	}
+
+	if (mediaBlockName === "core/video") {
 		return "video";
 	}
 
-	return defaultMediaType;
+	return normaliseMediaType(savedMediaType);
 }
 
 function getMediaColumnClassName(mediaType) {
 	return [
 		"pns-split-section__media-column",
-		...(mediaType === "video"
+		...(["video", "youtube"].includes(mediaType)
 			? ["pns-split-section__media-column--video"]
 			: []),
 	].join(" ");
 }
 
 function createMediaBlock(mediaType) {
+	const normalisedMediaType = normaliseMediaType(mediaType);
 	const blockName = {
 		image: "core/image",
 		slideshow: "jetpack/slideshow",
 		video: "core/video",
-	}[normaliseMediaType(mediaType)];
+		youtube: "core/embed",
+	}[normalisedMediaType];
 
-	return createBlock(blockName);
+	return createBlock(
+		blockName,
+		normalisedMediaType === "youtube" ? youTubeMediaTemplate[0][1] : {},
+	);
 }
 
 function createSecondTextPanelBlocks() {
@@ -480,9 +525,7 @@ function SplitSectionEdit(props) {
 	);
 	const { replaceInnerBlocks, updateBlockAttributes } =
 		useDispatch("core/block-editor");
-	const mediaType = normaliseMediaType(
-		attributes.mediaType || getMediaTypeFromColumn(mediaColumn),
-	);
+	const mediaType = getMediaTypeFromColumn(mediaColumn, attributes.mediaType);
 	const blockProps = useBlockProps({
 		className: getSplitSectionClassName(attributes),
 	});
@@ -576,6 +619,11 @@ function SplitSectionEdit(props) {
 							label: __("Video file", "pns-blocks"),
 							icon: SPLIT_VIDEO_ICON,
 						}),
+						el(ToggleGroupControlOptionIcon, {
+							value: "youtube",
+							label: __("YouTube", "pns-blocks"),
+							icon: SPLIT_VIDEO_ICON,
+						}),
 						hasJetpackSlideshowBlock &&
 							el(ToggleGroupControlOptionIcon, {
 								value: "slideshow",
@@ -600,89 +648,41 @@ function SplitSectionEdit(props) {
 							});
 						},
 					}),
-				),
-			),
-		el(
-			InspectorControls,
-			{ group: "dimensions" },
-			el(
-				ToolsPanelItem,
-				{
-					label: isTextText
-						? __("First text panel vertical alignment", "pns-blocks")
-						: __("Text vertical alignment", "pns-blocks"),
-					hasValue() {
-						return (
-							normaliseTextVerticalAlignment(
-								attributes.textVerticalAlignment,
-							) !== defaultTextVerticalAlignment
-						);
-					},
-					onDeselect() {
-						props.setAttributes({
-							textVerticalAlignment:
-								defaultTextVerticalAlignment,
-						});
-					},
-					isShownByDefault: true,
-					panelId: props.clientId,
-				},
-				el(SelectControl, {
-					label: isTextText
-						? __("First text panel vertical alignment", "pns-blocks")
-						: __("Text vertical alignment", "pns-blocks"),
-					value: normaliseTextVerticalAlignment(
-						attributes.textVerticalAlignment,
-					),
-					options: textVerticalAlignmentOptions,
-					onChange(textVerticalAlignment) {
-						props.setAttributes({ textVerticalAlignment });
-					},
-					__next40pxDefaultSize: true,
-				}),
-			),
-			isTextText &&
-				el(
-					ToolsPanelItem,
-					{
-						label: __(
-							"Second text panel vertical alignment",
-							"pns-blocks",
-						),
-						hasValue() {
-							return (
-								normaliseTextVerticalAlignment(
-									attributes.secondaryTextVerticalAlignment,
-								) !== defaultTextVerticalAlignment
-							);
-						},
-						onDeselect() {
-							props.setAttributes({
-								secondaryTextVerticalAlignment:
-									defaultTextVerticalAlignment,
-							});
-						},
-						isShownByDefault: true,
-						panelId: props.clientId,
-					},
 					el(SelectControl, {
-						label: __(
-							"Second text panel vertical alignment",
-							"pns-blocks",
-						),
+						label: isTextText
+							? __(
+									"First text panel vertical alignment",
+									"pns-blocks",
+								)
+							: __("Text vertical alignment", "pns-blocks"),
 						value: normaliseTextVerticalAlignment(
-							attributes.secondaryTextVerticalAlignment,
+							attributes.textVerticalAlignment,
 						),
 						options: textVerticalAlignmentOptions,
-						onChange(secondaryTextVerticalAlignment) {
-							props.setAttributes({
-								secondaryTextVerticalAlignment,
-							});
+						onChange(textVerticalAlignment) {
+							props.setAttributes({ textVerticalAlignment });
 						},
 						__next40pxDefaultSize: true,
 					}),
+					isTextText &&
+						el(SelectControl, {
+							label: __(
+								"Second text panel vertical alignment",
+								"pns-blocks",
+							),
+							value: normaliseTextVerticalAlignment(
+								attributes.secondaryTextVerticalAlignment,
+							),
+							options: textVerticalAlignmentOptions,
+							onChange(secondaryTextVerticalAlignment) {
+								props.setAttributes({
+									secondaryTextVerticalAlignment,
+								});
+							},
+							__next40pxDefaultSize: true,
+						}),
 				),
-		),
+			),
 		el(
 			"div",
 			blockProps,
@@ -791,6 +791,24 @@ registerBlockType("pns/split-section", {
 				mediaType: "video",
 			},
 			innerBlocks: videoTemplate,
+			isActive: ["mediaType"],
+			scope: ["block", "inserter"],
+		},
+		{
+			name: "youtube",
+			title: __("PNS - Split Section YouTube", "pns-blocks"),
+			icon: SPLIT_VIDEO_ICON,
+			description: __(
+				"Two-column section with editable copy and a YouTube embed.",
+				"pns-blocks",
+			),
+			attributes: {
+				align: "full",
+				backgroundColor: "white",
+				layoutVariant: "media-right",
+				mediaType: "youtube",
+			},
+			innerBlocks: youTubeTemplate,
 			isActive: ["mediaType"],
 			scope: ["block", "inserter"],
 		},

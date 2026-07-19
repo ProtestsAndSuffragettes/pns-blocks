@@ -53,14 +53,22 @@ $pns_split_media_fixture = '<!-- wp:pns/split-section {"mediaType":"video","layo
 	. '<!-- wp:column {"className":"pns-split-section__media-column pns-split-section__media-column--video"} --><div class="wp-block-column pns-split-section__media-column pns-split-section__media-column--video"></div><!-- /wp:column -->'
 	. '</div><!-- /wp:columns -->'
 	. '<!-- /wp:pns/split-section -->';
-$pns_split_media_rendered = do_blocks( $pns_split_media_fixture );
+foreach ( array( 'image', 'slideshow', 'video', 'youtube' ) as $pns_split_media_type ) {
+	$pns_split_media_rendered = do_blocks(
+		str_replace(
+			'"mediaType":"video"',
+			'"mediaType":"' . $pns_split_media_type . '"',
+			$pns_split_media_fixture
+		)
+	);
 
-if ( ! str_contains( $pns_split_media_rendered, 'is-pns-primary-text-align-top' ) ) {
-	WP_CLI::error( 'Rendered media fixture does not expose the text-side alignment class.' );
-}
+	if ( ! str_contains( $pns_split_media_rendered, 'is-pns-primary-text-align-top' ) ) {
+		WP_CLI::error( sprintf( 'Rendered %s media fixture does not expose the text-side alignment class.', $pns_split_media_type ) );
+	}
 
-if ( str_contains( $pns_split_media_rendered, 'is-pns-secondary-text-align-' ) ) {
-	WP_CLI::error( 'Rendered media fixture exposes a secondary alignment class on a media variation.' );
+	if ( str_contains( $pns_split_media_rendered, 'is-pns-secondary-text-align-' ) ) {
+		WP_CLI::error( sprintf( 'Rendered %s media fixture exposes a secondary alignment class.', $pns_split_media_type ) );
+	}
 }
 
 $pns_split_text_constrained_rendered = do_blocks(
