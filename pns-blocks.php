@@ -5,7 +5,7 @@
 /**
  * Plugin Name: PNS Blocks
  * Description: Project-owned portable blocks for Protests and Suffragettes.
- * Version: 0.2.0
+ * Version: 0.3.0
  * Author: Protests and Suffragettes
  * Text Domain: pns-blocks
  * Requires at least: 6.5
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PNS_BLOCKS_VERSION', '0.2.0' );
+define( 'PNS_BLOCKS_VERSION', '0.3.0' );
 /*
  * x-release-please-end
  */

@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.3.0](https://github.com/ProtestsAndSuffragettes/pns-blocks/compare/v0.2.0...v0.3.0) (2026-07-21)
+
+
+### Features
+
+* add Text | Text split section variation ([d26a60e](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/d26a60e458f51acc84a4e97d67e3e3f72b21e80d))
+* **split-section:** add text vertical alignment controls ([f18bd58](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/f18bd5840f889c6dd2d511d8370b0265decc1c46))
+* **split-section:** add YouTube media variation ([98a9fb1](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/98a9fb1339970b053809de43955573919ba36a1d))
+
+
+### Bug Fixes
+
+* **tooling:** use local block build in pre-commit ([9ec7269](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/9ec7269ff369447c38aab4f85136b53034843a30))
+
+
+### Miscellaneous Chores
+
+* add project agent workflow ([c02177a](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/c02177afd7db6c1a93fb353120cdd8cbd8ac1905))
+* pre commit hook ([4f5790b](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/4f5790b6b3573d8183961369beb1a8c080c47596))
+
 ## [0.2.0](https://github.com/ProtestsAndSuffragettes/pns-blocks/compare/v0.1.0...v0.2.0) (2026-07-19)
 
 
