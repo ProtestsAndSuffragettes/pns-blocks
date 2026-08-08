@@ -20,13 +20,17 @@ final class Assets {
 	 *
 	 * Local and script-optimizer output can lose the Local port when absolute
 	 * plugin URLs are serialized. Root-relative plugin URLs avoid that failure
-	 * mode without changing the asset path or version.
+	 * mode locally without violating the fully-qualified loader URL contract in
+	 * staging and production environments.
 	 *
 	 * @return void
 	 */
 	public static function register() {
-		add_filter( 'script_loader_src', array( self::class, 'root_relative_src' ), 20, 2 );
-		add_filter( 'style_loader_src', array( self::class, 'root_relative_src' ), 20, 2 );
+		if ( 'local' === wp_get_environment_type() ) {
+			add_filter( 'script_loader_src', array( self::class, 'root_relative_src' ), 20, 2 );
+			add_filter( 'style_loader_src', array( self::class, 'root_relative_src' ), 20, 2 );
+		}
+
 		add_filter( 'js_do_concat', array( self::class, 'skip_concatenation' ), 20, 2 );
 		add_filter( 'css_do_concat', array( self::class, 'skip_concatenation' ), 20, 2 );
 	}
@@ -58,7 +62,7 @@ final class Assets {
 	}
 
 	/**
-	 * Convert this plugin's absolute asset URLs to root-relative URLs.
+	 * Convert this plugin's absolute asset URLs to root-relative URLs locally.
 	 *
 	 * @param string $src    Asset URL.
 	 * @param string $handle Asset handle.
