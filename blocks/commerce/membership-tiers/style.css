@@ -28,6 +28,15 @@
 	margin-inline: calc((100% - var(--pns-membership-tiers--wide-size)) / 2);
 }
 
+@media only screen and (max-width: 48.874rem) {
+	.pns-membership-tiers.alignwide {
+		/* The constrained parent already owns the mobile content rail. */
+		inline-size: 100%;
+		margin-inline: 0;
+		padding-inline: 0;
+	}
+}
+
 .pns-membership-tiers__heading {
 	margin-block: 0 var(--wp--preset--spacing--regular, 1rem);
 }

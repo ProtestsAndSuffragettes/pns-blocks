@@ -537,6 +537,19 @@
 	grid-column: 2;
 }
 
+@media only screen and (max-width: 48.874rem) {
+	.pns-split-section:is(.is-style-pns-media-left, .is-style-pns-media-right)
+		> .pns-split-section__columns,
+	.pns-split-section.is-pns-text-text:is(
+			.is-style-pns-media-left,
+			.is-style-pns-media-right
+		)
+		> .pns-split-section__columns {
+		/* Copy owns the single mobile rail; keep coloured panels full width. */
+		padding-inline: 0;
+	}
+}
+
 @media only screen and (max-width: 59.999rem) {
 	.pns-split-section.is-pns-text-text:is(
 			.is-style-pns-media-left,

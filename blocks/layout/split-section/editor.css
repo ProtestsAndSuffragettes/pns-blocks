@@ -268,6 +268,28 @@
 	object-fit: cover;
 }
 
+@media only screen and (max-width: 48.874rem) {
+	.editor-styles-wrapper
+		.pns-split-section:is(
+			.is-style-pns-media-left,
+			.is-style-pns-media-right
+		)
+		> .block-editor-inner-blocks
+		> .block-editor-block-list__layout
+		> .pns-split-section__columns,
+	.editor-styles-wrapper
+		.pns-split-section.is-pns-text-text:is(
+			.is-style-pns-media-left,
+			.is-style-pns-media-right
+		)
+		> .block-editor-inner-blocks
+		> .block-editor-block-list__layout
+		> .pns-split-section__columns {
+		/* Copy owns the single mobile rail, matching the frontend. */
+		padding-inline: 0;
+	}
+}
+
 @media only screen and (max-width: 59.999rem) {
 	.editor-styles-wrapper
 		.pns-split-section.is-pns-text-text:is(
