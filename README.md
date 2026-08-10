@@ -6,7 +6,8 @@ Project-owned portable WordPress blocks for Protests and Suffragettes.
 
 - Plugin path: `app/public/wp-content/plugins/pns-blocks/`
 - Namespace: `pns/*`
-- Blocks: `pns/split-section`, `pns/featured-post`, `pns/post-metadata`, and `pns/post-details`
+- Blocks: `pns/split-section`, `pns/membership-tiers`, `pns/membership-tier`,
+  `pns/featured-post`, `pns/post-metadata`, and `pns/post-details`
 
 The plugin owns block registration, block editor behavior, frontend behavior,
 data access, stable rendered markup contracts, and self-contained block styles.
@@ -27,6 +28,13 @@ includes/
   Assets.php
   Blocks.php
 blocks/
+  commerce/
+    membership-tiers/
+      block.json
+      index.js
+    membership-tier/
+      block.json
+      index.js
   layout/
     split-section/
       block.json
@@ -80,6 +88,10 @@ project-scoped WordPress skills are available under `.codex/skills/`.
 
 ## Block Families
 
+- `blocks/commerce/` owns portable conversion components. Membership Tiers
+  keeps its four-card starter content editable while the parent/child block
+  contract owns responsive columns, intrinsic mobile sizing, shared-row
+  alignment, media crops, and action placement.
 - `blocks/layout/` owns portable structural layout blocks such as split
   sections. Structural layout, editor parity, edge-media alignment, and image
   frame behavior belong in the block package. The active PNS theme supplies

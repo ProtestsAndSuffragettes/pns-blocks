@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pns/membership-tier",
+	"title": "PNS - Membership Tier",
+	"category": "design",
+	"description": "A membership tier with aligned media, introduction, price, action, and benefits.",
+	"textdomain": "pns-blocks",
+	"parent": ["pns/membership-tiers"],
+	"supports": {
+		"align": false,
+		"anchor": false,
+		"color": false,
+		"customClassName": false,
+		"html": false,
+		"spacing": {
+			"margin": false,
+			"padding": false,
+			"blockGap": false
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

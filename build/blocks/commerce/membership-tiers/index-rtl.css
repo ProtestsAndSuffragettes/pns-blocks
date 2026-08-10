@@ -1,0 +1,7 @@
+.editor-styles-wrapper
+	.pns-membership-tiers>.pns-membership-tiers__grid>.block-editor-inner-blocks,.editor-styles-wrapper
+	.pns-membership-tiers>.pns-membership-tiers__grid>.block-editor-inner-blocks>.block-editor-block-list__layout{inline-size:100%;min-inline-size:0}.editor-styles-wrapper
+	.pns-membership-tiers>.pns-membership-tiers__grid>.block-editor-inner-blocks>.block-editor-block-list__layout{align-items:stretch;display:grid;gap:var(--pns-membership-tiers--column-gap);grid-template-columns:minmax(0,1fr)}.editor-styles-wrapper
+	.pns-membership-tiers>.pns-membership-tiers__grid>.block-editor-inner-blocks>.block-editor-block-list__layout>.pns-membership-tier{margin-block-start:0;max-inline-size:none}@container pns-membership-tiers (min-width: 44rem){.editor-styles-wrapper
+		.pns-membership-tiers>.pns-membership-tiers__grid>.block-editor-inner-blocks>.block-editor-block-list__layout{column-gap:var(--pns-membership-tiers--column-gap);grid-template-columns:repeat(2,minmax(0,1fr));row-gap:var(--pns-membership-tiers--row-gap)}}@container pns-membership-tiers (min-width: 80rem){.editor-styles-wrapper
+		.pns-membership-tiers>.pns-membership-tiers__grid>.block-editor-inner-blocks>.block-editor-block-list__layout{grid-template-columns:repeat(4,minmax(0,1fr))}}

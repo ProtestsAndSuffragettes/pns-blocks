@@ -1,0 +1,12 @@
+.editor-styles-wrapper
+	.pns-membership-tier>.block-editor-inner-blocks>.block-editor-block-list__layout,.editor-styles-wrapper .pns-membership-tier>.block-editor-inner-blocks{box-sizing:border-box;display:flex;flex:1;flex-direction:column;inline-size:100%;min-inline-size:0}.editor-styles-wrapper
+	.pns-membership-tier>.block-editor-inner-blocks>.block-editor-block-list__layout>:where(.wp-block){margin-block-start:0;max-inline-size:none}.editor-styles-wrapper
+	.pns-membership-tier
+	.block-editor-block-list__layout>.pns-membership-tier__media{aspect-ratio:4/3;block-size:auto;min-block-size:0}.editor-styles-wrapper
+	.pns-membership-tier>.block-editor-inner-blocks>.block-editor-block-list__layout>:is(.pns-membership-tier__introduction,.pns-membership-tier__price,.pns-membership-tier__action,.pns-membership-tier__benefits){box-sizing:border-box;margin:0;padding-inline:var(--wp--preset--spacing--regular,1rem)}.editor-styles-wrapper
+	.pns-membership-tier>.block-editor-inner-blocks>.block-editor-block-list__layout>.pns-membership-tier__introduction{padding-block:var(--wp--preset--spacing--regular,1rem) 0}.editor-styles-wrapper
+	.pns-membership-tier>.block-editor-inner-blocks>.block-editor-block-list__layout>.pns-membership-tier__price{font-size:var(--wp--preset--font-size--title-small,1.5rem);font-weight:500;line-height:var(--wp--custom--typography--line-height--heading,1.2);padding-block:var(--wp--preset--spacing--regular,1rem) 0;text-align:center}.editor-styles-wrapper
+	.pns-membership-tier>.block-editor-inner-blocks>.block-editor-block-list__layout>.pns-membership-tier__action{padding-block:var(--wp--preset--spacing--regular,1rem) 0}.editor-styles-wrapper
+	.pns-membership-tier>.block-editor-inner-blocks>.block-editor-block-list__layout>.pns-membership-tier__benefits{padding-block:var(--wp--preset--spacing--generous,2rem);padding-inline-end:var(--wp--preset--spacing--regular,1rem);padding-inline-start:calc(var(--wp--preset--spacing--regular, 1rem) + var(--wp--preset--spacing--roomy, 1.25rem))}@supports (grid-template-rows:subgrid){@container pns-membership-tiers (min-width: 44rem){.editor-styles-wrapper
+			.pns-membership-tier>.block-editor-inner-blocks,.editor-styles-wrapper
+			.pns-membership-tier>.block-editor-inner-blocks>.block-editor-block-list__layout{display:grid;grid-row:1/-1;grid-template-rows:subgrid}}}

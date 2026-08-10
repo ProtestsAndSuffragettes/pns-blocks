@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "pns/membership-tiers",
+  "title": "PNS - Membership Tiers",
+  "category": "design",
+  "description": "A responsive collection of aligned membership tiers.",
+  "textdomain": "pns-blocks",
+  "attributes": {
+    "align": {
+      "type": "string",
+      "default": "wide"
+    },
+    "heading": {
+      "type": "string",
+      "source": "html",
+      "selector": ".pns-membership-tiers__heading",
+      "default": "Choose Your Impact 🛠️"
+    }
+  },
+  "supports": {
+    "align": [
+      "wide"
+    ],
+    "anchor": false,
+    "color": false,
+    "customClassName": false,
+    "html": false,
+    "spacing": {
+      "margin": false,
+      "padding": false,
+      "blockGap": false
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css"
+}
