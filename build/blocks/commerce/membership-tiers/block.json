@@ -27,9 +27,16 @@
     "customClassName": false,
     "html": false,
     "spacing": {
-      "margin": false,
-      "padding": false,
-      "blockGap": false
+      "margin": [
+        "top",
+        "bottom"
+      ],
+      "padding": true,
+      "blockGap": false,
+      "__experimentalDefaultControls": {
+        "margin": true,
+        "padding": true
+      }
     }
   },
   "editorScript": "file:./index.js",
