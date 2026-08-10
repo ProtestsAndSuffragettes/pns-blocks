@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.3.0](https://github.com/ProtestsAndSuffragettes/pns-blocks/compare/v0.2.0...v0.3.0) (2026-08-10)
+
+
+### Features
+
+* add Text | Text split section variation ([d26a60e](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/d26a60e458f51acc84a4e97d67e3e3f72b21e80d))
+* include new membership tiers blocks and structure ([25f443c](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/25f443c5cb173db1b66de1b121d615ab9760e7ae))
+* **split-section:** add text vertical alignment controls ([f18bd58](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/f18bd5840f889c6dd2d511d8370b0265decc1c46))
+* **split-section:** add YouTube media variation ([98a9fb1](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/98a9fb1339970b053809de43955573919ba36a1d))
+
+
+### Bug Fixes
+
+* **blocks:** align mobile content rails ([3224b7a](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/3224b7aa0665ffb280027eab7ecac9165497fd1d))
+* **membership-tiers:** enable margin and padding controls for better layout flexibility ([73f809e](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/73f809e9e1e7731d322dda55e68dea5d25c28cc2))
+* preserve absolute asset URLs outside Local ([195c1ad](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/195c1ad184146f608c2d7e2a028991a633ed12d4))
+* **tooling:** use local block build in pre-commit ([9ec7269](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/9ec7269ff369447c38aab4f85136b53034843a30))
+* update membership editor styles ++ ([7214404](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/721440440e36641818adfb3b3892d995f5193cc5))
+
+
+### Miscellaneous Chores
+
+* add project agent workflow ([c02177a](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/c02177afd7db6c1a93fb353120cdd8cbd8ac1905))
+* pre commit hook ([4f5790b](https://github.com/ProtestsAndSuffragettes/pns-blocks/commit/4f5790b6b3573d8183961369beb1a8c080c47596))
+
 ## [0.2.0](https://github.com/ProtestsAndSuffragettes/pns-blocks/compare/v0.1.0...v0.2.0) (2026-07-19)
 
 
