@@ -1,5 +1,11 @@
 .editor-styles-wrapper
 	.pns-membership-tiers
+	> .pns-membership-tiers__grid {
+	display: block;
+}
+
+.editor-styles-wrapper
+	.pns-membership-tiers
 	> .pns-membership-tiers__grid
 	> .block-editor-inner-blocks,
 .editor-styles-wrapper
